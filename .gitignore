@@ -1,0 +1,44 @@
+# Compiled object files and interfaces
+*.o
+*.hi
+
+# Byte-compiled / optimized / DLL files
+*.dyn_o
+*.dyn_hi
+
+# Preprocessed files
+*.ghc.environment.*
+*.dump-*
+
+# Executables
+*.exe
+*.out
+
+# Stack build artifacts
+.stack-work/
+
+# Cabal build artifacts
+dist-newstyle/
+dist/
+cabal-dev/
+*.cabal-sandbox/
+
+# Logs
+*.log
+
+# IDE/Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other
+*.aux
+*.hp
+*.prof
+*.eventlog
