@@ -51,7 +51,10 @@ enigma' :: String -> Rotor -> Int -> String
 enigma' msg rotor cycleTurn =
     if msg == [] then []
     else encodeChar (head msg) (turnRotorByN rotor cycleTurn) : enigma' (tail msg) (turnRotorByN rotor cycleTurn) cycleTurn
-
+{-- 
+here was just importat to know the head and teail from a string
+str = "Pablo"; head = 'P' tail "ablo"
+--}
 indexOfChar :: Char -> Rotor -> Int
 indexOfChar char rotor = 
     if char == head rotor then 0
@@ -69,12 +72,32 @@ deEnigma msg rotor startTurn cycleTurn =
     else deEnigma (init msg) rotor startTurn cycleTurn
     ++
     [decodeChar (last msg) (turnRotorByN rotor (length (init msg) * cycleTurn + startTurn))]
-
+{--
+Here I need to try all the options, that means
+calls deEnigma "QYAD" rotor1 0 - 26 0 - 26
+Until we rotate to the same position, based on the size of the rotor (26)
+I used map which appplies a lambda funtion into the combination.
+'\' means just the beginning of the lambda function
+--}
 breakEnigma :: String -> Rotor -> String
-breakEnigma = undefined
+breakEnigma msg rotor =
+  let rotorSize = length rotor
+      combinations = allCombinations rotorSize
+      results = map (\(x, y) -> deEnigma msg rotor x y) combinations
+  in unlines results
+
+
+
+
+{-- Generate all combinations of two numbers given the rotor size using the
+list comprehension syntax. --}
+allCombinations :: Int -> [(Int, Int)]
+allCombinations rotorSize = [(x, y) | x <- [0..rotorSize-1], y <- [0..rotorSize-1]]
+
 
 breakEnigmaWithGuess :: String -> Rotor -> String -> String
-breakEnigmaWithGuess = undefined
+breakEnigmaWithGuess msg rotor guess =
+    unlines (filter (isInfixOf guess) (lines (breakEnigma msg rotor)))
 
 
 secretMessage = "EQWJTEMXUPICNOLPUNUDJDOWIZJANGKXDJFONQNRQQYGFLMGRCENKUIIEKIABTIXXJCNTH"
