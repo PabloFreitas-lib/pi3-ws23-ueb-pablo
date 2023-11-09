@@ -37,9 +37,20 @@ removeElemByIndex index (hElem : tList)
   | index == 0 = tList
   | otherwise = hElem : removeElemByIndex (index - 1) tList
 
+{--
+This function was an example of the trade of about researching and re-inventing the wheel.
+It took me 15 min to write a alternative to verify the Palindrome, wasnt perfect, but there were
+a build in function that did the same thing in 1 min.
+--}
 isPalindrome :: String -> Bool
 isPalindrome [] = True
 isPalindrome str = str == reverse str
 
+{--
+This function will just calculate the 10% and round it up.
+Learning about the list comprehension and the function map, it made this pretty easy
+--}
 computeTip :: [Float] -> [(Float, Int)]
-computeTip = undefined
+computeTip list
+  | null list = []
+  | otherwise = map (\x -> (x, round (x * 1.1))) list
