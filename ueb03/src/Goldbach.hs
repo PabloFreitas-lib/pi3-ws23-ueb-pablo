@@ -25,7 +25,15 @@ primesUpTo top =
 
 goldbach :: Integer -> [(Integer, Integer)]
 goldbach n =
-  [(x, y) | x <- primesUpTo (div n 2), y <- primesUpTo n, x + y == n]
+  [(x, y) | x <- primesUpTo (div n 2), y <- primesUpTo n, x + y == n && x <= y]
 
+{--
+This approach is really not good, but it solves the problem.
+--}
 goldbach2 :: Integer -> (Integer, Integer, Integer)
-goldbach2 = undefined
+goldbach2 n = findPair (primesUpTo (div n 2))
+  where
+    findPair (x : xs) =
+      if isPrime (n - x)
+        then (n, x, n - x)
+        else findPair xs
