@@ -3,46 +3,81 @@ module TextToolbox where
 import Data.Char
 import Data.List
 
-
 -- 4.1
 
 countChars :: String -> Int
-countChars = undefined
+countChars = length
 
-
+{--
+Using lambda function to check each chat as Space or not.
+--}
 countCharsWOSpaces :: String -> Int
-countCharsWOSpaces = undefined
+countCharsWOSpaces str =
+  length (filter (not . isSpace) str)
 
-
+{--
+Using the pre-def function `words` to split the string into words.
+--}
 countWords :: String -> Int
-countWords = undefined
-
+countWords = length . words
 
 averageWordLength :: String -> Float
-averageWordLength = undefined
+averageWordLength str =
+  let wordsList = words str
+   in fromIntegral (sum (map (fromIntegral . length) wordsList)) / fromIntegral (length wordsList)
 
+-- Helper function to filter only 'A' to 'Z' characters
+filterAZ :: String -> String
+filterAZ str = filter isAsciiUpper (map toUpper str)
 
+-- Helper function to sort by frequency in descending order
+sortFreqDescending :: [(Char, Int)] -> [(Char, Int)]
+sortFreqDescending = sortBy (\(_, freq1) (_, freq2) -> compare freq2 freq1)
+
+-- Main function using your existing logic
 freqOfChars :: String -> [(Char, Int)]
-freqOfChars = undefined
-
+freqOfChars str =
+  let filteredStr = filterAZ str
+      charFreqs = [(char, length group) | group@(char : _) <- group (sort filteredStr)]
+   in sortFreqDescending charFreqs
 
 -- 4.2
-
+{--
+This I choose to use the take and drop functions to split the string into parts following the int parameter
+Still not quite right, the functio requeriments are really complex for me, i would have to use a lot of functions to get the result
+and much more effort than this. The actual solution looks so complex in my head that I think that is wrong or I'm not understanding it well.
+--}
 formatText :: String -> Int -> [String]
-formatText t l = undefined
+formatText t l
+  | l < maxWordLength t = map (take (maxWordLength t)) (takeWhile (not . null) (iterate (drop (maxWordLength t)) t))
+  | otherwise = map (take l) (takeWhile (not . null) (iterate (drop l) t))
 
+maxWordLength :: String -> Int
+maxWordLength str =
+  maximum (map length (words str))
 
 addLineNrs :: [String] -> [String]
-addLineNrs = undefined
+addLineNrs = zipWith formatLine [1 ..]
+  where
+    formatLine :: Int -> String -> String
+    formatLine n line = padZeros n ++ " " ++ line
 
+{--
+I started with this function, but this is an auxiliar function for the addLineNrs function
+- Personal option, not sure this is useful in any context
+--}
+padZeros :: Int -> String
+padZeros n
+  | n < 10 = "00" ++ show n
+  | n < 100 = "0" ++ show n
+  | otherwise = show n
 
 searchString :: String -> [String] -> [String]
-searchString = undefined
-
+searchString strToFind strList = filter (isInfixOf strToFind) strList
 
 nicelyPrint :: [String] -> String
-nicelyPrint = undefined
-
+nicelyPrint [] = ""
+nicelyPrint (x : xs) = x ++ "\n" ++ nicelyPrint xs
 
 -- sample texts
 
