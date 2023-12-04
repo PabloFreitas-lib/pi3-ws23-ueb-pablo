@@ -9,19 +9,20 @@ data Polynomial
   deriving (Show, Eq)
 
 -- 1. Polynom aus Liste von Koeffizienten erzeugen
-
+{-- Iterating in the list of the coeficients and using the Constructor from the Data Polynomial --}
 -- Function to make a polynomial from a list of coefficients
 makePolynomial :: [Float] -> Polynomial
 makePolynomial [] = error "Coefficient list should not be empty."
 makePolynomial [c] = Degree0 c
 makePolynomial (c : cs) = DegreeN c (makePolynomial cs)
 
--- generateDegrees n = DegreeN 1.0 (Degree0 (fromIntegral n)) : generateDegrees (n + 1)
-
+{-- Each piece of the Polynomial has a DegreeN|Degree0 and a Coeficient (not relevant for the grad)
+To calculate i just need to iterate again and for each "level" I add a 1 into the grad.
+The condition to stop is the Degree0 --}
 -- 2. Grad eines Polynoms ermitteln
 degreeOf :: Polynomial -> Int
 degreeOf (Degree0 _) = 0
-degreeOf (DegreeN _ subPoly) = 1 + degreeOf subPoly
+degreeOf (DegreeN _ p) = max 0 (1 + degreeOf p)
 
 -- 3. Funktionswert an Stelle x berechnen
 {-- ax^2 + bx + c = DegreeN a (DegreeN (b) (Degree0 c )) --}
@@ -51,6 +52,9 @@ zeros (DegreeN c (Degree0 c2)) = [-c2 / c]
 zeros (DegreeN c (DegreeN c2 (Degree0 c3))) = solveQuadratic c c2 c3
 zeros _ = error "Polynomial must be of degree 1 or 2."
 
+{-- The formula to calculate the roots is:
+x = (-b +- sqrt(b^2 - 4ac)) / 2a
+--}
 solveQuadratic :: Float -> Float -> Float -> [Float]
 solveQuadratic a b c =
   let d = b ^ 2 - 4 * a * c
@@ -63,16 +67,19 @@ solveQuadratic a b c =
             ]
 
 -- 6. Y-Achsenabschnitt eines Polynoms ermitteln
-
+{-- The y intercept is the value of the function when x = 0
+using the zeros function and the functionValue--}
 yIntercept :: Polynomial -> Float
-yIntercept (Degree0 c) = c
-yIntercept (DegreeN c _) = c
+yIntercept poly = functionValue poly 0
 
 -- 7. Ableitung eines Polynoms bilden
-
+{-- The derivative of a polynomial is the same polynomial but with the coeficients multiplied by the degree and the degree reduced by 1
+  Lets get first the degree of the function and do the interaction until the GRAD - 1, Since the Degree0 will be the the last DegreeN multiplied with the grad--}
 derivativeOf :: Polynomial -> Polynomial
-derivativeOf (Degree0 _) = Degree0 0
-derivativeOf (DegreeN c subPoly) = DegreeN (c * fromIntegral (degreeOf subPoly)) (derivativeOf subPoly)
+derivativeOf (DegreeN c (Degree0 _)) = Degree0 c
+derivativeOf (DegreeN c subPoly) = DegreeN (c * fromIntegral (degreeOf subPoly + 1)) (derivativeOf subPoly)
+
+-- derivativeOf (DegreeN c (DegreeN c2 (DegreeN c3 (DegreeN c4 (Degree0 _))))) = DegreeN (c * 4) (DegreeN (c2 * 3) (DegreeN (c3 * 2) (Degree0 c4)))
 
 -- 8. Näherungsweise Berechnung von Nullstellen mit Newton-Verfahren
 
